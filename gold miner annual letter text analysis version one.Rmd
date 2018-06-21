@@ -1,0 +1,110 @@
+---
+title: "blank"
+
+
+
+---
+
+ 
+
+```{r}
+library(tidyverse)
+library(tidytext)
+
+
+rawtext <- read_csv("C:/Users/mmccrae/Downloads/Gold Miner Text Analysis - Sheet1.csv")
+View(rawtext)
+glimpse(rawtext)
+
+
+
+```
+
+
+Let's set tokens and remove stop words. Let's also count and filter.
+
+
+```{r}
+
+
+tokentext <- rawtext %>% unnest_tokens(word, LettertoShareholders) %>% anti_join(stop_words ) %>% filter(!word%in%c("shareholders","cash","growth","business","price","prices","gold","million","newmont","percent","ounces","performance")) %>% filter(!str_detect(word, "[1-9]"))
+tokentext
+
+```
+
+
+Let's do a top word count now broken down by Year. 
+
+
+```{r}
+
+#countwordyear <- tokentext %>% count ( word , sort = TRUE ) %>% filter ( n > 15 ) %>% mutate ( word = reorder ( word , n ))  
+#countwordyear
+
+countwordyear <- tokentext %>% group_by(Year, word) %>% count(word, sort = TRUE) %>% filter(n>2)
+countwordyear
+
+
+```
+
+
+
+
+K. Let's try an initial plot. 
+
+
+
+```{r}
+
+
+
+  ggplot(countwordyear, aes(word , n )) +
+  geom_col () +
+  xlab (NULL) +
+  coord_flip() +
+  facet_wrap(~Year, scales="free")
+
+
+
+
+```
+
+
+
+
+Let's try a divergence based on character count of one
+
+
+
+```{r}
+
+justoneword <- tokentext %>% group_by(Year, word) %>% count(word, sort = TRUE) %>% filter(n==1)
+justoneword
+
+
+```
+
+
+Let's plot
+
+
+```{r}
+
+
+
+
+  ggplot(justoneword, aes(word , n )) +
+  geom_col () +
+  xlab (NULL) +
+  coord_flip() +
+  facet_wrap(~Year, scales="free")
+
+
+
+
+
+
+
+```
+
+
